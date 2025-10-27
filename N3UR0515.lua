@@ -2,8 +2,8 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "C00lKid Exploit V6",
-    LoadingTitle = "Loading...",
+    Name = "N3UR0515 Exploit HAHAH",
+    LoadingTitle = "LOADING READY...",
     LoadingSubtitle = "Enhanced Bypass Active",
     ConfigurationSaving = { Enabled = false }
 })
