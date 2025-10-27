@@ -1,539 +1,366 @@
--- C00lKid Premium ESP V3 - Luxury Edition
+-- C00lKid 99 Nights ESP V1 - Mob & Player Tracker
 local Players = game:GetService("Players")
 local CurrentCamera = game:GetService("Workspace").CurrentCamera
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 
--- СОЗДАЕМ LUXURY GUI
-local ESPGui = Instance.new("ScreenGui")
-ESPGui.Name = "C00lKidLuxuryESP"
-ESPGui.Parent = game:GetService("CoreGui")
-ESPGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-local MainContainer = Instance.new("Frame")
-MainContainer.Size = UDim2.new(0, 400, 0, 550)
-MainContainer.Position = UDim2.new(0.02, 0, 0.3, 0)
-MainContainer.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-MainContainer.BackgroundTransparency = 0.1
-MainContainer.BorderSizePixel = 0
-MainContainer.Parent = ESPGui
-
--- GLOW EFFECT
-local Glow = Instance.new("ImageLabel")
-Glow.Name = "GlowEffect"
-Glow.Size = UDim2.new(1, 20, 1, 20)
-Glow.Position = UDim2.new(0, -10, 0, -10)
-Glow.BackgroundTransparency = 1
-Glow.Image = "rbxassetid://8992230671"
-Glow.ImageColor3 = Color3.fromRGB(0, 100, 255)
-Glow.ImageTransparency = 0.8
-Glow.ScaleType = Enum.ScaleType.Slice
-Glow.SliceCenter = Rect.new(23, 23, 277, 277)
-Glow.Parent = MainContainer
-
-local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 15)
-MainCorner.Parent = MainContainer
-
--- GLASS EFFECT
-local GlassFrame = Instance.new("Frame")
-GlassFrame.Size = UDim2.new(1, 0, 1, 0)
-GlassFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-GlassFrame.BackgroundTransparency = 0.95
-GlassFrame.BorderSizePixel = 0
-GlassFrame.Parent = MainContainer
-
-local GlassCorner = Instance.new("UICorner")
-GlassCorner.CornerRadius = UDim.new(0, 15)
-GlassCorner.Parent = GlassFrame
-
--- HEADER WITH GRADIENT
-local Header = Instance.new("Frame")
-Header.Size = UDim2.new(1, 0, 0, 60)
-Header.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
-Header.BorderSizePixel = 0
-Header.Parent = MainContainer
-
-local HeaderCorner = Instance.new("UICorner")
-HeaderCorner.CornerRadius = UDim.new(0, 15)
-HeaderCorner.Parent = Header
-
--- GRADIENT EFFECT
-local Gradient = Instance.new("UIGradient")
-Gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 100, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 0, 255))
-})
-Gradient.Rotation = 45
-Gradient.Parent = Header
-
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(0.6, 0, 1, 0)
-Title.Position = UDim2.new(0.05, 0, 0, 0)
-Title.BackgroundTransparency = 1
-Title.Text = "🎯 PREMIUM ESP V3"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
-Title.Font = Enum.Font.GothamBold
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = Header
-
-local SubTitle = Instance.new("TextLabel")
-Title.Size = UDim2.new(0.6, 0, 0, 20)
-Title.Position = UDim2.new(0.05, 0, 0.5, 0)
-Title.BackgroundTransparency = 1
-Title.Text = "Luxury Edition"
-Title.TextColor3 = Color3.fromRGB(200, 200, 255)
-Title.TextSize = 12
-Title.Font = Enum.Font.Gotham
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = Header
-
--- PREMIUM TOGGLE BUTTON
-local ToggleContainer = Instance.new("Frame")
-ToggleContainer.Size = UDim2.new(0, 100, 0, 35)
-ToggleContainer.Position = UDim2.new(0.7, 0, 0.2, 0)
-ToggleContainer.BackgroundTransparency = 1
-ToggleContainer.Parent = Header
-
-local ToggleBackground = Instance.new("Frame")
-ToggleBackground.Size = UDim2.new(1, 0, 1, 0)
-ToggleBackground.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-ToggleBackground.Parent = ToggleContainer
-
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(1, 0)
-ToggleCorner.Parent = ToggleBackground
-
-local ToggleKnob = Instance.new("Frame")
-ToggleKnob.Size = UDim2.new(0, 25, 0, 25)
-ToggleKnob.Position = UDim2.new(0.05, 0, 0.14, 0)
-ToggleKnob.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-ToggleKnob.Parent = ToggleContainer
-
-local ToggleKnobCorner = Instance.new("UICorner")
-ToggleKnobCorner.CornerRadius = UDim.new(1, 0)
-ToggleKnobCorner.Parent = ToggleKnob
-
-local ToggleLabel = Instance.new("TextLabel")
-ToggleLabel.Size = UDim2.new(1, 0, 1, 0)
-ToggleLabel.BackgroundTransparency = 1
-ToggleLabel.Text = "OFF"
-ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleLabel.TextSize = 12
-ToggleLabel.Font = Enum.Font.GothamBold
-ToggleLabel.Parent = ToggleContainer
-
--- CONTENT AREA
-local ContentFrame = Instance.new("Frame")
-ContentFrame.Size = UDim2.new(1, -20, 1, -80)
-ContentFrame.Position = UDim2.new(0, 10, 0, 70)
-ContentFrame.BackgroundTransparency = 1
-ContentFrame.Parent = MainContainer
-
-local ScrollFrame = Instance.new("ScrollingFrame")
-ScrollFrame.Size = UDim2.new(1, 0, 1, 0)
-ScrollFrame.BackgroundTransparency = 1
-ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 200)
-ScrollFrame.ScrollBarThickness = 4
-ScrollFrame.Parent = ContentFrame
-
--- DRAGGING
-local dragging = false
-local dragInput, dragStart, startPos
-
-Header.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = MainContainer.Position
-    end
-end)
-
-Header.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        MainContainer.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-
--- ESP CONFIG
-local ESPConfig = {
-    Enabled = false,
-    Box = true,
-    Name = true,
-    Health = true,
-    Distance = true,
-    Tracers = true,
-    Avatar = true,
-    TeamCheck = false,
-    MaxDistance = 1000,
-    BoxColor = Color3.fromRGB(0, 255, 150),
-    TextColor = Color3.fromRGB(255, 255, 255),
-    TracerColor = Color3.fromRGB(255, 255, 255),
-    TeamColor = true
-}
-
--- ESP VARIABLES
+-- ПЕРЕМЕННЫЕ ДЛЯ 99 НОЧЕЙ
+local ESPEnabled = false
 local ESPObjects = {}
 local ESPLoop
 
--- PREMIUM TOGGLE FUNCTION
-local function CreatePremiumToggle(text, configKey, default)
-    local ToggleFrame = Instance.new("Frame")
-    ToggleFrame.Size = UDim2.new(1, 0, 0, 45)
-    ToggleFrame.BackgroundTransparency = 1
-    ToggleFrame.Parent = ScrollFrame
-    
-    local ToggleBackground = Instance.new("Frame")
-    ToggleBackground.Size = UDim2.new(1, 0, 0, 35)
-    ToggleBackground.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    ToggleBackground.Parent = ToggleFrame
-    
-    local ToggleCorner = Instance.new("UICorner")
-    ToggleCorner.CornerRadius = UDim.new(0, 10)
-    ToggleCorner.Parent = ToggleBackground
-    
-    local ToggleButton = Instance.new("TextButton")
-    ToggleButton.Size = UDim2.new(0, 50, 0, 25)
-    ToggleButton.Position = UDim2.new(0.03, 0, 0.14, 0)
-    ToggleButton.BackgroundColor3 = default and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(200, 50, 50)
-    ToggleButton.Text = ""
-    ToggleButton.Parent = ToggleBackground
-    
-    local ToggleButtonCorner = Instance.new("UICorner")
-    ToggleButtonCorner.CornerRadius = UDim.new(1, 0)
-    ToggleButtonCorner.Parent = ToggleButton
-    
-    local ToggleKnob = Instance.new("Frame")
-    ToggleKnob.Size = UDim2.new(0, 19, 0, 19)
-    ToggleKnob.Position = UDim2.new(default and 0.55 or 0.05, 0, 0.12, 0)
-    ToggleKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ToggleKnob.Parent = ToggleBackground
-    
-    local ToggleKnobCorner = Instance.new("UICorner")
-    ToggleKnobCorner.CornerRadius = UDim.new(1, 0)
-    ToggleKnobCorner.Parent = ToggleKnob
-    
-    local ToggleLabel = Instance.new("TextLabel")
-    ToggleLabel.Size = UDim2.new(0.7, 0, 1, 0)
-    ToggleLabel.Position = UDim2.new(0.2, 0, 0, 0)
-    ToggleLabel.BackgroundTransparency = 1
-    ToggleLabel.Text = text
-    ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ToggleLabel.TextSize = 14
-    ToggleLabel.Font = Enum.Font.Gotham
-    ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    ToggleLabel.Parent = ToggleBackground
-    
-    -- ANIMATION
-    ToggleButton.MouseButton1Click:Connect(function()
-        ESPConfig[configKey] = not ESPConfig[configKey]
-        
-        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        
-        if ESPConfig[configKey] then
-            TweenService:Create(ToggleButton, tweenInfo, {BackgroundColor3 = Color3.fromRGB(0, 200, 100)}):Play()
-            TweenService:Create(ToggleKnob, tweenInfo, {Position = UDim2.new(0.55, 0, 0.12, 0)}):Play()
-        else
-            TweenService:Create(ToggleButton, tweenInfo, {BackgroundColor3 = Color3.fromRGB(200, 50, 50)}):Play()
-            TweenService:Create(ToggleKnob, tweenInfo, {Position = UDim2.new(0.05, 0, 0.12, 0)}):Play()
+-- КОНФИГ ДЛЯ 99 НОЧЕЙ
+local ESPConfig = {
+    MaxDistance = 10000, -- 10к дистанция
+    PlayerColor = Color3.fromRGB(0, 255, 0),
+    MobColor = Color3.fromRGB(255, 0, 0),
+    BossColor = Color3.fromRGB(255, 0, 255),
+    TextColor = Color3.fromRGB(255, 255, 255),
+    ShowNames = true,
+    ShowDistance = true,
+    ShowHealth = true,
+    ShowTracers = true
+}
+
+-- ПРОСТОЙ GUI ДЛЯ УПРАВЛЕНИЯ
+local ESPGui = Instance.new("ScreenGui")
+ESPGui.Name = "C00lKid99NightsESP"
+ESPGui.Parent = game:GetService("CoreGui")
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(0, 200, 0, 40)
+StatusLabel.Position = UDim2.new(0, 10, 0, 10)
+StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+StatusLabel.BackgroundTransparency = 0.5
+StatusLabel.Text = "99 Nights ESP: OFF (Press K)"
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.TextSize = 14
+StatusLabel.Font = Enum.Font.GothamBold
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Center
+StatusLabel.Visible = true
+StatusLabel.Parent = ESPGui
+
+local StatusCorner = Instance.new("UICorner")
+StatusCorner.CornerRadius = UDim.new(0, 8)
+StatusCorner.Parent = StatusLabel
+
+-- ФУНКЦИЯ ОПРЕДЕЛЕНИЯ ТИПА ОБЪЕКТА
+local function GetObjectType(obj)
+    if obj:IsA("Model") then
+        local humanoid = obj:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            -- ПРОВЕРЯЕМ ИГРОКА
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player.Character == obj then
+                    return "Player"
+                end
+            end
+            
+            -- ПРОВЕРЯЕМ МОБОВ И БОССОВ
+            local name = obj.Name:lower()
+            if name:find("boss") or name:find("mini") or name:find("giant") then
+                return "Boss"
+            elseif name:find("zombie") or name:find("skeleton") or name:find("monster") or name:find("enemy") then
+                return "Mob"
+            end
         end
-    end)
-    
-    return ToggleFrame
+    end
+    return nil
 end
 
--- PREMIUM SLIDER FUNCTION
-local function CreatePremiumSlider(text, configKey, min, max, default)
-    local SliderFrame = Instance.new("Frame")
-    SliderFrame.Size = UDim2.new(1, 0, 0, 60)
-    SliderFrame.BackgroundTransparency = 1
-    SliderFrame.Parent = ScrollFrame
+-- ФУНКЦИЯ СОЗДАНИЯ ESP
+local function CreateESP(obj)
+    if ESPObjects[obj] then return end
     
-    local SliderBackground = Instance.new("Frame")
-    SliderBackground.Size = UDim2.new(1, 0, 0, 45)
-    SliderBackground.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    SliderBackground.Parent = SliderFrame
-    
-    local SliderCorner = Instance.new("UICorner")
-    SliderCorner.CornerRadius = UDim.new(0, 10)
-    SliderCorner.Parent = SliderBackground
-    
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, -20, 0, 20)
-    Label.Position = UDim2.new(0, 15, 0, 5)
-    Label.BackgroundTransparency = 1
-    Label.Text = text .. ": " .. default
-    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Label.TextSize = 13
-    Label.Font = Enum.Font.Gotham
-    Label.TextXAlignment = Enum.TextXAlignment.Left
-    Label.Parent = SliderBackground
-    
-    local Track = Instance.new("Frame")
-    Track.Size = UDim2.new(1, -30, 0, 6)
-    Track.Position = UDim2.new(0, 15, 0, 30)
-    Track.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-    Track.Parent = SliderBackground
-    
-    local TrackCorner = Instance.new("UICorner")
-    TrackCorner.CornerRadius = UDim.new(1, 0)
-    TrackCorner.Parent = Track
-    
-    local Fill = Instance.new("Frame")
-    Fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
-    Fill.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-    Fill.Parent = Track
-    
-    local FillCorner = Instance.new("UICorner")
-    FillCorner.CornerRadius = UDim.new(1, 0)
-    FillCorner.Parent = Fill
-    
-    local SliderButton = Instance.new("TextButton")
-    SliderButton.Size = UDim2.new(1, 0, 1, 0)
-    SliderButton.BackgroundTransparency = 1
-    SliderButton.Text = ""
-    SliderButton.Parent = Track
-    
-    SliderButton.MouseButton1Down:Connect(function()
-        local connection
-        connection = UserInputService.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement then
-                local percent = math.clamp((input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
-                local value = math.floor(min + (max - min) * percent)
-                Fill.Size = UDim2.new(percent, 0, 1, 0)
-                Label.Text = text .. ": " .. value
-                ESPConfig[configKey] = value
-            end
-        end)
-        
-        UserInputService.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                connection:Disconnect()
-            end
-        end)
-    end)
-    
-    return SliderFrame
-end
-
--- ADD SETTINGS TO SCROLL FRAME
-local yOffset = 0
-local function AddElement(element)
-    element.Position = UDim2.new(0, 0, 0, yOffset)
-    yOffset = yOffset + element.Size.Y.Offset + 5
-    ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
-end
-
--- ESP SETTINGS
-AddElement(CreatePremiumToggle("📦 Box ESP", "Box", true))
-AddElement(CreatePremiumToggle("🏷️ Player Names", "Name", true))
-AddElement(CreatePremiumToggle("❤️ Health Display", "Health", true))
-AddElement(CreatePremiumToggle("📏 Distance", "Distance", true))
-AddElement(CreatePremiumToggle("🎯 Tracers", "Tracers", true))
-AddElement(CreatePremiumToggle("👤 Player Avatar", "Avatar", true))
-AddElement(CreatePremiumToggle("🎨 Team Colors", "TeamColor", true))
-AddElement(CreatePremiumSlider("🔭 Max Distance", "MaxDistance", 0, 2000, 1000))
-
--- ESP FUNCTIONS (остаются такими же как в предыдущей версии)
-local function CreateESP(player)
-    if ESPObjects[player] or player == LocalPlayer then return end
+    local objType = GetObjectType(obj)
+    if not objType then return end
     
     local esp = {
-        Player = player,
+        Object = obj,
+        Type = objType,
         Box = nil,
         NameLabel = nil,
         HealthLabel = nil,
         DistanceLabel = nil,
-        Tracer = nil,
-        Avatar = nil
+        Tracer = nil
     }
     
-    -- PREMIUM BOX WITH GLOW
+    -- BOX ESP
     esp.Box = Instance.new("Frame")
-    esp.Box.Name = "ESPBox_" .. player.Name
+    esp.Box.Name = "ESPBox_" .. obj.Name
     esp.Box.BackgroundTransparency = 0.7
-    esp.Box.BackgroundColor3 = ESPConfig.BoxColor
-    esp.Box.BorderSizePixel = 0
+    esp.Box.BorderSizePixel = 2
+    esp.Box.BorderColor3 = Color3.fromRGB(255, 255, 255)
     esp.Box.ZIndex = 10
     esp.Box.Visible = false
     esp.Box.Parent = ESPGui
     
-    local BoxCorner = Instance.new("UICorner")
-    BoxCorner.CornerRadius = UDim.new(0, 4)
-    BoxCorner.Parent = esp.Box
-    
-    -- GLOW EFFECT FOR BOX
-    local BoxGlow = Instance.new("ImageLabel")
-    BoxGlow.Size = UDim2.new(1, 6, 1, 6)
-    BoxGlow.Position = UDim2.new(0, -3, 0, -3)
-    BoxGlow.BackgroundTransparency = 1
-    BoxGlow.Image = "rbxassetid://8992230671"
-    BoxGlow.ImageColor3 = ESPConfig.BoxColor
-    BoxGlow.ImageTransparency = 0.7
-    BoxGlow.ScaleType = Enum.ScaleType.Slice
-    BoxGlow.SliceCenter = Rect.new(23, 23, 277, 277)
-    BoxGlow.Parent = esp.Box
-    
-    -- PREMIUM NAME LABEL
+    -- NAME LABEL
     esp.NameLabel = Instance.new("TextLabel")
-    esp.NameLabel.Name = "ESPName_" .. player.Name
-    esp.NameLabel.Text = player.Name
+    esp.NameLabel.Name = "ESPName_" .. obj.Name
+    esp.NameLabel.Text = obj.Name
     esp.NameLabel.TextColor3 = ESPConfig.TextColor
-    esp.NameLabel.TextSize = 14
+    esp.NameLabel.TextSize = 12
     esp.NameLabel.Font = Enum.Font.GothamBold
-    esp.NameLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    esp.NameLabel.BackgroundTransparency = 0.5
+    esp.NameLabel.BackgroundTransparency = 1
     esp.NameLabel.ZIndex = 11
     esp.NameLabel.Visible = false
     esp.NameLabel.Parent = ESPGui
     
-    local NameCorner = Instance.new("UICorner")
-    NameCorner.CornerRadius = UDim.new(0, 4)
-    NameCorner.Parent = esp.NameLabel
-    
-    -- PREMIUM HEALTH BAR
-    esp.HealthLabel = Instance.new("Frame")
-    esp.HealthLabel.Name = "ESPHealth_" .. player.Name
-    esp.HealthLabel.Size = UDim2.new(0, 60, 0, 15)
-    esp.HealthLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    -- HEALTH LABEL
+    esp.HealthLabel = Instance.new("TextLabel")
+    esp.HealthLabel.Name = "ESPHealth_" .. obj.Name
+    esp.HealthLabel.Text = "HP: 100"
+    esp.HealthLabel.TextColor3 = ESPConfig.TextColor
+    esp.HealthLabel.TextSize = 11
+    esp.HealthLabel.Font = Enum.Font.Gotham
+    esp.HealthLabel.BackgroundTransparency = 1
     esp.HealthLabel.ZIndex = 11
     esp.HealthLabel.Visible = false
     esp.HealthLabel.Parent = ESPGui
     
-    local HealthCorner = Instance.new("UICorner")
-    HealthCorner.CornerRadius = UDim.new(0, 4)
-    HealthCorner.Parent = esp.HealthLabel
-    
-    esp.HealthBar = Instance.new("Frame")
-    esp.HealthBar.Size = UDim2.new(1, 0, 1, 0)
-    esp.HealthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    esp.HealthBar.Parent = esp.HealthLabel
-    
-    local HealthBarCorner = Instance.new("UICorner")
-    HealthBarCorner.CornerRadius = UDim.new(0, 4)
-    HealthBarCorner.Parent = esp.HealthBar
-    
-    esp.HealthText = Instance.new("TextLabel")
-    esp.HealthText.Size = UDim2.new(1, 0, 1, 0)
-    esp.HealthText.BackgroundTransparency = 1
-    esp.HealthText.Text = "100%"
-    esp.HealthText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    esp.HealthText.TextSize = 10
-    esp.HealthText.Font = Enum.Font.GothamBold
-    esp.HealthText.Parent = esp.HealthLabel
-    
-    -- PREMIUM DISTANCE
+    -- DISTANCE LABEL
     esp.DistanceLabel = Instance.new("TextLabel")
-    esp.DistanceLabel.Name = "ESPDistance_" .. player.Name
+    esp.DistanceLabel.Name = "ESPDistance_" .. obj.Name
     esp.DistanceLabel.Text = "0m"
     esp.DistanceLabel.TextColor3 = ESPConfig.TextColor
-    esp.DistanceLabel.TextSize = 12
+    esp.DistanceLabel.TextSize = 11
     esp.DistanceLabel.Font = Enum.Font.Gotham
-    esp.DistanceLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    esp.DistanceLabel.BackgroundTransparency = 0.5
+    esp.DistanceLabel.BackgroundTransparency = 1
     esp.DistanceLabel.ZIndex = 11
     esp.DistanceLabel.Visible = false
     esp.DistanceLabel.Parent = ESPGui
     
-    local DistanceCorner = Instance.new("UICorner")
-    DistanceCorner.CornerRadius = UDim.new(0, 4)
-    DistanceCorner.Parent = esp.DistanceLabel
-    
-    -- PREMIUM TRACER
+    -- TRACER
     esp.Tracer = Instance.new("Frame")
-    esp.Tracer.Name = "ESPTracer_" .. player.Name
-    esp.Tracer.BackgroundColor3 = ESPConfig.TracerColor
+    esp.Tracer.Name = "ESPTracer_" .. obj.Name
+    esp.Tracer.BackgroundColor3 = ESPConfig.TextColor
     esp.Tracer.BorderSizePixel = 0
-    esp.Tracer.Size = UDim2.new(0, 2, 0, 1)
+    esp.Tracer.Size = UDim2.new(0, 1, 0, 1)
     esp.Tracer.ZIndex = 9
     esp.Tracer.Visible = false
     esp.Tracer.Parent = ESPGui
     
-    -- PREMIUM AVATAR WITH BORDER
-    esp.Avatar = Instance.new("ImageLabel")
-    esp.Avatar.Name = "ESPAvatar_" .. player.Name
-    esp.Avatar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    esp.Avatar.Size = UDim2.new(0, 30, 0, 30)
-    esp.Avatar.ZIndex = 12
-    esp.Avatar.Visible = false
-    esp.Avatar.Parent = ESPGui
-    
-    local AvatarCorner = Instance.new("UICorner")
-    AvatarCorner.CornerRadius = UDim.new(1, 0)
-    AvatarCorner.Parent = esp.Avatar
-    
-    pcall(function()
-        esp.Avatar.Image = "https://www.roblox.com/headshot-thumbnail/image?userId="..player.UserId.."&width=150&height=150&format=png"
-    end)
-    
-    ESPObjects[player] = esp
+    ESPObjects[obj] = esp
 end
 
--- Остальные функции (UpdateESP, RemoveESP) остаются такими же как в предыдущей версии
--- ... (код функций UpdateESP и RemoveESP)
-
--- PREMIUM TOGGLE ANIMATION
-ToggleContainer.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        ESPConfig.Enabled = not ESPConfig.Enabled
+-- ФУНКЦИЯ ОБНОВЛЕНИЯ ESP
+local function UpdateESP(obj)
+    local esp = ESPObjects[obj]
+    if not esp or not obj.PrimaryPart then return end
+    
+    local humanoid = obj:FindFirstChildOfClass("Humanoid")
+    local rootPart = obj.PrimaryPart
+    
+    if not rootPart then return end
+    
+    -- ВЫЧИСЛЯЕМ ДИСТАНЦИЮ
+    local distance = (LocalPlayer.Character and LocalPlayer.Character.PrimaryPart) and 
+                    (rootPart.Position - LocalPlayer.Character.PrimaryPart.Position).Magnitude or 0
+    
+    if distance > ESPConfig.MaxDistance then
+        if esp.Box then esp.Box.Visible = false end
+        if esp.NameLabel then esp.NameLabel.Visible = false end
+        if esp.HealthLabel then esp.HealthLabel.Visible = false end
+        if esp.DistanceLabel then esp.DistanceLabel.Visible = false end
+        if esp.Tracer then esp.Tracer.Visible = false end
+        return
+    end
+    
+    -- WORLD TO SCREEN SPACE
+    local vector, onScreen = CurrentCamera:WorldToViewportPoint(rootPart.Position)
+    
+    if onScreen then
+        local scale = 1 / (vector.Z * math.tan(math.rad(CurrentCamera.FieldOfView * 0.5)) * 2) * 100
+        local size = Vector3.new(4 * scale, 6 * scale, 0)
         
-        local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        
-        if ESPConfig.Enabled then
-            TweenService:Create(ToggleKnob, tweenInfo, {Position = UDim2.new(0.55, 0, 0.14, 0)}):Play()
-            TweenService:Create(ToggleBackground, tweenInfo, {BackgroundColor3 = Color3.fromRGB(0, 100, 200)}):Play()
-            TweenLabel.Text = "ON"
-            
-            -- ВКЛЮЧАЕМ ESP СИСТЕМУ
-            for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer then
-                    CreateESP(player)
-                end
-            end
-            
-            ESPLoop = RunService.RenderStepped:Connect(function()
-                for player, esp in pairs(ESPObjects) do
-                    if player and player.Character then
-                        UpdateESP(player)
-                    else
-                        RemoveESP(player)
-                    end
-                end
-            end)
-            
+        -- ЦВЕТ В ЗАВИСИМОСТИ ОТ ТИПА
+        local color
+        if esp.Type == "Player" then
+            color = ESPConfig.PlayerColor
+        elseif esp.Type == "Boss" then
+            color = ESPConfig.BossColor
         else
-            TweenService:Create(ToggleKnob, tweenInfo, {Position = UDim2.new(0.05, 0, 0.14, 0)}):Play()
-            TweenService:Create(ToggleBackground, tweenInfo, {BackgroundColor3 = Color3.fromRGB(40, 40, 60)}):Play()
-            ToggleLabel.Text = "OFF"
+            color = ESPConfig.MobColor
+        end
+        
+        -- ОБНОВЛЯЕМ BOX
+        if esp.Box then
+            esp.Box.Size = UDim2.new(0, size.X, 0, size.Y)
+            esp.Box.Position = UDim2.new(0, vector.X - size.X / 2, 0, vector.Y - size.Y / 2)
+            esp.Box.BackgroundColor3 = color
+            esp.Box.Visible = true
+        end
+        
+        -- ОБНОВЛЯЕМ ИМЯ
+        if esp.NameLabel and ESPConfig.ShowNames then
+            esp.NameLabel.Position = UDim2.new(0, vector.X, 0, vector.Y - size.Y / 2 - 15)
+            esp.NameLabel.Visible = true
+        else
+            esp.NameLabel.Visible = false
+        end
+        
+        -- ОБНОВЛЯЕМ ЗДОРОВЬЕ
+        if esp.HealthLabel and ESPConfig.ShowHealth and humanoid then
+            local health = math.floor(humanoid.Health)
+            local maxHealth = math.floor(humanoid.MaxHealth)
+            esp.HealthLabel.Text = "HP: "..health.."/"..maxHealth
+            esp.HealthLabel.TextColor3 = Color3.fromRGB(
+                255 - (health / maxHealth * 255),
+                health / maxHealth * 255,
+                0
+            )
+            esp.HealthLabel.Position = UDim2.new(0, vector.X, 0, vector.Y + size.Y / 2 + 5)
+            esp.HealthLabel.Visible = true
+        else
+            esp.HealthLabel.Visible = false
+        end
+        
+        -- ОБНОВЛЯЕМ ДИСТАНЦИЮ
+        if esp.DistanceLabel and ESPConfig.ShowDistance then
+            esp.DistanceLabel.Text = math.floor(distance).."m"
+            esp.DistanceLabel.Position = UDim2.new(0, vector.X, 0, vector.Y + size.Y / 2 + 20)
+            esp.DistanceLabel.Visible = true
+        else
+            esp.DistanceLabel.Visible = false
+        end
+        
+        -- ОБНОВЛЯЕМ TRACER
+        if esp.Tracer and ESPConfig.ShowTracers then
+            local tracerLength = math.sqrt((vector.X - CurrentCamera.ViewportSize.X/2)^2 + (vector.Y - CurrentCamera.ViewportSize.Y)^2)
+            esp.Tracer.Size = UDim2.new(0, 2, 0, tracerLength)
+            esp.Tracer.Position = UDim2.new(0, CurrentCamera.ViewportSize.X/2, 0, CurrentCamera.ViewportSize.Y)
+            esp.Tracer.Rotation = math.deg(math.atan2(vector.Y - CurrentCamera.ViewportSize.Y, vector.X - CurrentCamera.ViewportSize.X/2))
+            esp.Tracer.BackgroundColor3 = color
+            esp.Tracer.Visible = true
+        else
+            esp.Tracer.Visible = false
+        end
+        
+    else
+        -- СКРЫВАЕМ ЕСЛИ ВНЕ ЭКРАНА
+        if esp.Box then esp.Box.Visible = false end
+        if esp.NameLabel then esp.NameLabel.Visible = false end
+        if esp.HealthLabel then esp.HealthLabel.Visible = false end
+        if esp.DistanceLabel then esp.DistanceLabel.Visible = false end
+        if esp.Tracer then esp.Tracer.Visible = false end
+    end
+end
+
+-- ФУНКЦИЯ УДАЛЕНИЯ ESP
+local function RemoveESP(obj)
+    local esp = ESPObjects[obj]
+    if esp then
+        if esp.Box then esp.Box:Destroy() end
+        if esp.NameLabel then esp.NameLabel:Destroy() end
+        if esp.HealthLabel then esp.HealthLabel:Destroy() end
+        if esp.DistanceLabel then esp.DistanceLabel:Destroy() end
+        if esp.Tracer then esp.Tracer:Destroy() end
+        ESPObjects[obj] = nil
+    end
+end
+
+-- ФУНКЦИЯ ПОИСКА ОБЪЕКТОВ
+local function FindObjects()
+    local objects = {}
+    
+    -- ИЩЕМ ИГРОКОВ
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character and player ~= LocalPlayer then
+            table.insert(objects, player.Character)
+        end
+    end
+    
+    -- ИЩЕМ МОБОВ И БОССОВ В WORKSPACE
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj.PrimaryPart then
+            local objType = GetObjectType(obj)
+            if objType and (objType == "Mob" or objType == "Boss") then
+                table.insert(objects, obj)
+            end
+        end
+    end
+    
+    return objects
+end
+
+-- ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ESP
+local function ToggleESP()
+    ESPEnabled = not ESPEnabled
+    
+    if ESPEnabled then
+        StatusLabel.Text = "99 Nights ESP: ON (Press K)"
+        StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
+        
+        -- ЗАПУСКАЕМ ОСНОВНОЙ ЦИКЛ
+        ESPLoop = RunService.RenderStepped:Connect(function()
+            -- НАХОДИМ ВСЕ ОБЪЕКТЫ
+            local objects = FindObjects()
             
-            -- ВЫКЛЮЧАЕМ ESP СИСТЕМУ
-            if ESPLoop then
-                ESPLoop:Disconnect()
+            -- СОЗДАЕМ ESP ДЛЯ НОВЫХ ОБЪЕКТОВ
+            for _, obj in ipairs(objects) do
+                if not ESPObjects[obj] then
+                    CreateESP(obj)
+                end
             end
             
-            for player, esp in pairs(ESPObjects) do
-                RemoveESP(player)
+            -- ОБНОВЛЯЕМ И УДАЛЯЕМ СТАРЫЕ
+            for obj, esp in pairs(ESPObjects) do
+                if obj and obj.Parent then
+                    UpdateESP(obj)
+                else
+                    RemoveESP(obj)
+                end
             end
+        end)
+        
+    else
+        StatusLabel.Text = "99 Nights ESP: OFF (Press K)"
+        StatusLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        
+        -- ОСТАНАВЛИВАЕМ ЦИКЛ И ОЧИЩАЕМ
+        if ESPLoop then
+            ESPLoop:Disconnect()
+        end
+        
+        for obj, esp in pairs(ESPObjects) do
+            RemoveESP(obj)
+        end
+    end
+end
+
+-- КЛАВИША K ДЛЯ ПЕРЕКЛЮЧЕНИЯ
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == Enum.KeyCode.K then
+        ToggleESP()
+    end
+end)
+
+-- АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ ПРИ ИЗМЕНЕНИЯХ В ИГРЕ
+workspace.DescendantAdded:Connect(function(descendant)
+    if ESPEnabled then
+        wait(0.5) -- ЖДЕМ ЧУТЬ ДЛЯ ЗАГРУЗКИ МОДЕЛИ
+        local objType = GetObjectType(descendant)
+        if objType and (objType == "Mob" or objType == "Boss") then
+            CreateESP(descendant)
         end
     end
 end)
 
-print("✅ C00lKid Premium ESP V3 - Luxury Edition loaded!")
-print("🎨 Ultra beautiful interface activated")
-print("🎯 Premium ESP system ready")
+workspace.DescendantRemoving:Connect(function(descendant)
+    if ESPObjects[descendant] then
+        RemoveESP(descendant)
+    end
+end)
+
+print("✅ C00lKid 99 Nights ESP V1 loaded!")
+print("🎯 Press K to toggle ESP")
+print("📏 Max distance: 10,000 studs")
+print("👥 Tracking players and mobs")
+
+-- ИНФОРМАЦИОННОЕ СООБЩЕНИЕ
+StatusLabel.Text = "99 Nights ESP: OFF (Press K)\nTracking: Players, Mobs, Bosses"
+StatusLabel.Size = UDim2.new(0, 250, 0, 50)
