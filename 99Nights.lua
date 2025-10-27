@@ -12,7 +12,7 @@ local ESPLoop
 
 -- КОНФИГ ДЛЯ 99 НОЧЕЙ
 local ESPConfig = {
-    MaxDistance = 10000, -- 10к дистанция
+    MaxDistance = 1000, -- 10к дистанция
     PlayerColor = Color3.fromRGB(0, 255, 0),
     MobColor = Color3.fromRGB(255, 0, 0),
     BossColor = Color3.fromRGB(255, 0, 255),
