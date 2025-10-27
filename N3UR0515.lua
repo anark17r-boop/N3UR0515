@@ -1,139 +1,322 @@
--- Создаем GUI напрямую без библиотек
+-- [C00lKid Exploit V18 - Rayfield Working Version]
+print("🎯 Загрузка Rayfield UI...")
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+print("✅ Rayfield загружен")
+
+local Window = Rayfield:CreateWindow({
+    Name = "C00lKid Exploit V18",
+    LoadingTitle = "C00lKid Exploit",
+    LoadingSubtitle = "by Colin",
+    ConfigurationSaving = { Enabled = false }
+})
+
+print("✅ Окно создано")
+
+-- МЕГА БАЙПАС
 local Player = game:GetService("Players").LocalPlayer
-local Gui = Instance.new("ScreenGui")
-Gui.Name = "MainExploitGUI"
-Gui.Parent = Player:WaitForChild("PlayerGui")
 
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 350, 0, 400)
-MainFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainFrame.BorderSizePixel = 0
-MainFrame.Parent = Gui
-
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 12)
-UICorner.Parent = MainFrame
-
--- Заголовок
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 50)
-Title.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-Title.Text = "C00lKid Exploit V15"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
-Title.Font = Enum.Font.GothamBold
-Title.Parent = MainFrame
-
-local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 12)
-TitleCorner.Parent = Title
-
--- Функция создания кнопок
-local yOffset = 60
-local function CreateButton(text, callback)
-    local Button = Instance.new("TextButton")
-    Button.Size = UDim2.new(0.9, 0, 0, 40)
-    Button.Position = UDim2.new(0.05, 0, 0, yOffset)
-    Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    Button.Text = text
-    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Button.TextSize = 14
-    Button.Font = Enum.Font.Gotham
-    Button.Parent = MainFrame
-    
-    local ButtonCorner = Instance.new("UICorner")
-    ButtonCorner.CornerRadius = UDim.new(0, 8)
-    ButtonCorner.Parent = Button
-    
-    Button.MouseButton1Click:Connect(callback)
-    yOffset = yOffset + 50
-end
-
--- Функция создания слайдера
-local function CreateSlider(text, min, max, default, callback)
-    local SliderFrame = Instance.new("Frame")
-    SliderFrame.Size = UDim2.new(0.9, 0, 0, 60)
-    SliderFrame.Position = UDim2.new(0.05, 0, 0, yOffset)
-    SliderFrame.BackgroundTransparency = 1
-    SliderFrame.Parent = MainFrame
-    
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, 0, 0, 20)
-    Label.BackgroundTransparency = 1
-    Label.Text = text .. ": " .. default
-    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Label.TextSize = 14
-    Label.Font = Enum.Font.Gotham
-    Label.Parent = SliderFrame
-    
-    local Track = Instance.new("Frame")
-    Track.Size = UDim2.new(1, 0, 0, 10)
-    Track.Position = UDim2.new(0, 0, 0, 30)
-    Track.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    Track.Parent = SliderFrame
-    
-    local Fill = Instance.new("Frame")
-    Fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
-    Fill.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-    Fill.Parent = Track
-    
-    local TrackCorner = Instance.new("UICorner")
-    TrackCorner.CornerRadius = UDim.new(0, 5)
-    TrackCorner.Parent = Track
-    
-    local SliderButton = Instance.new("TextButton")
-    SliderButton.Size = UDim2.new(1, 0, 1, 0)
-    SliderButton.BackgroundTransparency = 1
-    SliderButton.Text = ""
-    SliderButton.Parent = Track
-    
-    SliderButton.MouseButton1Down:Connect(function()
-        local connection
-        connection = game:GetService("UserInputService").InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement then
-                local percent = math.clamp((input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
-                local value = math.floor(min + (max - min) * percent)
-                Fill.Size = UDim2.new(percent, 0, 1, 0)
-                Label.Text = text .. ": " .. value
-                callback(value)
-            end
-        end)
-        
-        game:GetService("UserInputService").InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                connection:Disconnect()
-            end
-        end)
-    end)
-    
-    yOffset = yOffset + 70
-end
-
--- Добавляем функции
-CreateSlider("Скорость", 16, 500, 16, function(v)
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v
+-- Защита от кика
+hookfunction(Player.Kick, function()
+    print("🚫 Кик заблокирован")
+    return wait(9e9)
 end)
 
-CreateSlider("Прыжок", 50, 500, 50, function(v)
-    game.Players.LocalPlayer.Character.Humanoid.JumpPower = v
-end)
-
-CreateButton("🔥 Поджечь всех", function()
-    for i, p in pairs(game.Players:GetPlayers()) do
-        if p ~= game.Players.LocalPlayer and p.Character then
-            local fire = Instance.new("Fire")
-            fire.Size = 20
-            fire.Parent = p.Character.HumanoidRootPart
+-- Защита через метатаблицы
+if hookmetatable then
+    local mt = getrawmetatable(game)
+    local old = mt.__namecall
+    setreadonly(mt, false)
+    mt.__namecall = newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        if tostring(self) == "LocalPlayer" and method == "Kick" then
+            print("🚫 Кик через namecall заблокирован")
+            return wait(9e9)
         end
-    end
-end)
-
-CreateButton("💀 Бессмертие", function()
-    local humanoid = game.Players.LocalPlayer.Character.Humanoid
-    humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-        humanoid.Health = 100
+        return old(self, ...)
     end)
-end)
+    setreadonly(mt, true)
+end
 
-print("🎉 C00lKid Exploit V15 загружен!")
+print("✅ Байпас активирован")
+
+-- ОСНОВНЫЕ ФУНКЦИИ
+local MainTab = Window:CreateTab("Основные функции")
+local TrollingTab = Window:CreateTab("Троллинг функции")
+local VisualTab = Window:CreateTab("Визуальные эффекты")
+
+print("✅ Вкладки созданы")
+
+-- 1. СКОРОСТЬ И ПРЫЖОК
+MainTab:CreateSlider({
+    Name = "Скорость передвижения",
+    Range = {16, 500},
+    Increment = 1,
+    Suffix = "ед.",
+    CurrentValue = 16,
+    Flag = "WalkSpeed",
+    Callback = function(Value)
+        local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = Value
+            print("🎯 Скорость установлена: " .. Value)
+        end
+    end,
+})
+
+MainTab:CreateSlider({
+    Name = "Сила прыжка",
+    Range = {50, 500},
+    Increment = 1,
+    Suffix = "ед.",
+    CurrentValue = 50,
+    Flag = "JumpPower",
+    Callback = function(Value)
+        local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.JumpPower = Value
+            print("🎯 Сила прыжка установлена: " .. Value)
+        end
+    end,
+})
+
+-- 2. БЕССМЕРТИЕ
+MainTab:CreateToggle({
+    Name = "Режим бессмертия",
+    CurrentValue = false,
+    Flag = "GodMode",
+    Callback = function(Value)
+        if Value then
+            print("🛡️ Бессмертие активировано")
+            
+            -- Защита при респавне
+            Player.CharacterAdded:Connect(function(character)
+                wait(1)
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid.Health = 100
+                end
+            end)
+            
+            -- Защита от урона
+            local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+                    if humanoid.Health < 100 then
+                        humanoid.Health = 100
+                    end
+                end)
+            end
+        else
+            print("🛡️ Бессмертие деактивировано")
+        end
+    end,
+})
+
+-- 3. ПОДЖОГ ВСЕХ ИГРОКОВ
+TrollingTab:CreateButton({
+    Name = "Поджечь всех игроков",
+    Callback = function()
+        print("🔥 Активация поджога...")
+        
+        for _, targetPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
+            if targetPlayer ~= Player and targetPlayer.Character then
+                local humanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    -- Создаем огонь
+                    local fire = Instance.new("Fire")
+                    fire.Name = "C00lKidFire"
+                    fire.Size = 25
+                    fire.Heat = 15
+                    fire.Parent = humanoidRootPart
+                    
+                    -- Наносим урон
+                    spawn(function()
+                        while fire and fire.Parent do
+                            wait(0.5)
+                            local targetHumanoid = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+                            if targetHumanoid then
+                                targetHumanoid:TakeDamage(8)
+                            end
+                        end
+                    end)
+                    
+                    -- Репликация
+                    fire:SetNetworkOwner(nil)
+                end
+            end
+        end
+        
+        Rayfield:Notify({
+            Title = "Успех!",
+            Content = "Все игроки подожжены!",
+            Duration = 5,
+            Image = 4483362458
+        })
+        
+        print("✅ Все игроки подожжены")
+    end,
+})
+
+-- 4. ЗАМЕНА НЕБА НА СКИН
+VisualTab:CreateButton({
+    Name = "Заменить небо на мой скин",
+    Callback = function()
+        print("🌌 Замена неба...")
+        
+        local character = Player.Character
+        if character then
+            local shirt = character:FindFirstChildOfClass("Shirt")
+            local pants = character:FindFirstChildOfClass("Pants")
+            local textureId = nil
+            
+            if shirt then
+                textureId = shirt.ShirtTemplate
+            elseif pants then
+                textureId = pants.PantsTemplate
+            end
+            
+            if textureId then
+                -- Удаляем старое небо
+                for _, obj in ipairs(game:GetService("Lighting"):GetChildren()) do
+                    if obj:IsA("Sky") then
+                        obj:Destroy()
+                    end
+                end
+                
+                -- Создаем новое небо
+                local newSky = Instance.new("Sky")
+                newSky.SkyboxBk = textureId
+                newSky.SkyboxDn = textureId
+                newSky.SkyboxFt = textureId
+                newSky.SkyboxLf = textureId
+                newSky.SkyboxRt = textureId
+                newSky.SkyboxUp = textureId
+                newSky.Parent = game:GetService("Lighting")
+                
+                -- Репликация
+                game:GetService("Lighting"):SetNetworkOwner(nil)
+                
+                Rayfield:Notify({
+                    Title = "Успех!",
+                    Content = "Небо заменено на ваш скин!",
+                    Duration = 5,
+                    Image = 4483362458
+                })
+                
+                print("✅ Небо заменено на скин")
+            else
+                Rayfield:Notify({
+                    Title = "Ошибка!",
+                    Content = "Скин не найден!",
+                    Duration = 5,
+                    Image = 4483362458
+                })
+                
+                print("❌ Скин не найден")
+            end
+        end
+    end,
+})
+
+-- 5. ДИСКО-РЕЖИМ
+VisualTab:CreateToggle({
+    Name = "Диско-режим для всех",
+    CurrentValue = false,
+    Flag = "DiscoMode",
+    Callback = function(Value)
+        if Value then
+            print("🎭 Диско-режим активирован")
+            
+            spawn(function()
+                while Rayfield.Flags["DiscoMode"] do
+                    wait(0.3)
+                    
+                    for _, targetPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
+                        if targetPlayer.PlayerGui then
+                            -- Удаляем старый GUI
+                            local oldGui = targetPlayer.PlayerGui:FindFirstChild("DiscoEffectGui")
+                            if oldGui then
+                                oldGui:Destroy()
+                            end
+                            
+                            -- Создаем новый диско-экран
+                            local discoGui = Instance.new("ScreenGui")
+                            discoGui.Name = "DiscoEffectGui"
+                            discoGui.ResetOnSpawn = false
+                            
+                            local discoFrame = Instance.new("Frame")
+                            discoFrame.Name = "DiscoFrame"
+                            discoFrame.Size = UDim2.new(1, 0, 1, 0)
+                            discoFrame.BackgroundColor3 = Color3.fromRGB(
+                                math.random(0, 255),
+                                math.random(0, 255),
+                                math.random(0, 255)
+                            )
+                            discoFrame.BackgroundTransparency = 0.2
+                            discoFrame.BorderSizePixel = 0
+                            discoFrame.Parent = discoGui
+                            
+                            discoGui.Parent = targetPlayer.PlayerGui
+                            
+                            -- Репликация
+                            discoGui:SetNetworkOwner(nil)
+                        end
+                    end
+                end
+            end)
+        else
+            print("🎭 Диско-режим деактивирован")
+            
+            for _, targetPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
+                if targetPlayer.PlayerGui then
+                    local discoGui = targetPlayer.PlayerGui:FindFirstChild("DiscoEffectGui")
+                    if discoGui then
+                        discoGui:Destroy()
+                    end
+                end
+            end
+        end
+    end,
+})
+
+-- 6. ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ
+MainTab:CreateButton({
+    Name = "Активировать сверхсилу",
+    Callback = function()
+        local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = 100
+            humanoid.JumpPower = 150
+            Rayfield:Notify({
+                Title = "Успех!",
+                Content = "Сверхсила активирована!",
+                Duration = 5,
+                Image = 4483362458
+            })
+            print("💪 Сверхсила активирована")
+        end
+    end,
+})
+
+MainTab:CreateButton({
+    Name = "Сбросить настройки",
+    Callback = function()
+        local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = 16
+            humanoid.JumpPower = 50
+            Rayfield:Notify({
+                Title = "Успех!",
+                Content = "Настройки сброшены!",
+                Duration = 5,
+                Image = 4483362458
+            })
+            print("🔄 Настройки сброшены")
+        end
+    end,
+})
+
+Rayfield:LoadConfiguration()
+print("🎯 C00lKid Exploit V18 полностью загружен и готов к использованию!")
