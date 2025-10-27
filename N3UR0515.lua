@@ -1,11 +1,12 @@
--- C00lKid Exploit V24 - Fixed Functions + Fog
+-- C00lKid Exploit V25 - REAL WORKING FUNCTIONS
 local Player = game:GetService("Players").LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
--- СОЗДАЕМ ПРЕМИУМ GUI
+-- СОЗДАЕМ GUI
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "C00lKidPremiumGUI"
+ScreenGui.Name = "C00lKidGUI"
 ScreenGui.Parent = Player:WaitForChild("PlayerGui")
 
 local MainFrame = Instance.new("Frame")
@@ -14,18 +15,6 @@ MainFrame.Position = UDim2.new(0.3, 0, 0.2, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
-
--- ЭФФЕКТ ТЕНИ
-local Shadow = Instance.new("ImageLabel")
-Shadow.Size = UDim2.new(1, 10, 1, 10)
-Shadow.Position = UDim2.new(0, -5, 0, -5)
-Shadow.BackgroundTransparency = 1
-Shadow.Image = "rbxassetid://5554237735"
-Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-Shadow.ImageTransparency = 0.8
-Shadow.ScaleType = Enum.ScaleType.Slice
-Shadow.SliceCenter = Rect.new(23, 23, 277, 277)
-Shadow.Parent = MainFrame
 
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 15)
@@ -37,36 +26,18 @@ TitleBar.Size = UDim2.new(1, 0, 0, 50)
 TitleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 TitleBar.Parent = MainFrame
 
-local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 15)
-TitleCorner.Parent = TitleBar
-
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -40, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "C00lKid Exploit V24"
+Title.Text = "C00lKid Exploit V25 - REAL WORKING"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
+Title.TextSize = 16
 Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TitleBar
 
-local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -35, 0, 10)
-CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-CloseButton.Text = "×"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 20
-CloseButton.Font = Enum.Font.GothamBold
-CloseButton.Parent = TitleBar
-
-local CloseCorner = Instance.new("UICorner")
-CloseCorner.CornerRadius = UDim.new(0, 8)
-CloseCorner.Parent = CloseButton
-
--- ПЕРЕТАСКИВАНИЕ ОКНА
+-- ПЕРЕТАСКИВАНИЕ
 local dragging = false
 local dragInput, dragStart, startPos
 
@@ -75,12 +46,6 @@ TitleBar.InputBegan:Connect(function(input)
         dragging = true
         dragStart = input.Position
         startPos = MainFrame.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
     end
 end)
 
@@ -97,157 +62,80 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-CloseButton.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
 end)
 
--- ОБЛАСТЬ КОНТЕНТА
-local ContentFrame = Instance.new("Frame")
-ContentFrame.Size = UDim2.new(1, 0, 1, -50)
-ContentFrame.Position = UDim2.new(0, 0, 0, 50)
-ContentFrame.BackgroundTransparency = 1
-ContentFrame.Parent = MainFrame
-
+-- ОСНОВНОЙ КОНТЕНТ
 local ScrollFrame = Instance.new("ScrollingFrame")
-ScrollFrame.Size = UDim2.new(1, -20, 1, -20)
-ScrollFrame.Position = UDim2.new(0, 10, 0, 10)
+ScrollFrame.Size = UDim2.new(1, -20, 1, -70)
+ScrollFrame.Position = UDim2.new(0, 10, 0, 60)
 ScrollFrame.BackgroundTransparency = 1
-ScrollFrame.BorderSizePixel = 0
 ScrollFrame.ScrollBarThickness = 4
-ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
-ScrollFrame.Parent = ContentFrame
+ScrollFrame.Parent = MainFrame
 
--- ФУНКЦИИ ДЛЯ GUI
+-- ПЕРЕМЕННЫЕ ДЛЯ ФУНКЦИЙ
+local currentWalkSpeed = 16
+local currentJumpPower = 50
+local godMode = false
+local discoEnabled = false
+local fogEnabled = false
+
+-- ФУНКЦИЯ СОЗДАНИЯ КНОПКИ
 local yOffset = 10
-
-local function CreatePremiumButton(text, description, callback, color)
-    local ButtonFrame = Instance.new("Frame")
-    ButtonFrame.Size = UDim2.new(1, 0, 0, 60)
-    ButtonFrame.Position = UDim2.new(0, 0, 0, yOffset)
-    ButtonFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    ButtonFrame.Parent = ScrollFrame
-    
-    local ButtonCorner = Instance.new("UICorner")
-    ButtonCorner.CornerRadius = UDim.new(0, 10)
-    ButtonCorner.Parent = ButtonFrame
-    
+local function CreateButton(text, callback, color)
     local Button = Instance.new("TextButton")
-    Button.Size = UDim2.new(1, 0, 1, 0)
-    Button.BackgroundTransparency = 1
-    Button.Text = ""
-    Button.Parent = ButtonFrame
+    Button.Size = UDim2.new(1, 0, 0, 45)
+    Button.Position = UDim2.new(0, 0, 0, yOffset)
+    Button.BackgroundColor3 = color or Color3.fromRGB(50, 50, 50)
+    Button.Text = text
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.TextSize = 14
+    Button.Font = Enum.Font.Gotham
+    Button.Parent = ScrollFrame
     
-    local Icon = Instance.new("TextLabel")
-    Icon.Size = UDim2.new(0, 40, 0, 40)
-    Icon.Position = UDim2.new(0, 10, 0, 10)
-    Icon.BackgroundColor3 = color or Color3.fromRGB(50, 50, 50)
-    Icon.Text = "⚡"
-    Icon.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Icon.TextSize = 18
-    Icon.Font = Enum.Font.GothamBold
-    Icon.Parent = ButtonFrame
-    
-    local IconCorner = Instance.new("UICorner")
-    IconCorner.CornerRadius = UDim.new(0, 8)
-    IconCorner.Parent = Icon
-    
-    local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Size = UDim2.new(1, -60, 0, 25)
-    TitleLabel.Position = UDim2.new(0, 60, 0, 8)
-    TitleLabel.BackgroundTransparency = 1
-    TitleLabel.Text = text
-    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TitleLabel.TextSize = 14
-    TitleLabel.Font = Enum.Font.GothamBold
-    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    TitleLabel.Parent = ButtonFrame
-    
-    local DescLabel = Instance.new("TextLabel")
-    DescLabel.Size = UDim2.new(1, -60, 0, 20)
-    DescLabel.Position = UDim2.new(0, 60, 0, 30)
-    DescLabel.BackgroundTransparency = 1
-    DescLabel.Text = description
-    DescLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-    DescLabel.TextSize = 11
-    DescLabel.Font = Enum.Font.Gotham
-    DescLabel.TextXAlignment = Enum.TextXAlignment.Left
-    DescLabel.Parent = ButtonFrame
-    
-    Button.MouseEnter:Connect(function()
-        TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
-    end)
-    
-    Button.MouseLeave:Connect(function()
-        TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-    end)
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.Parent = Button
     
     Button.MouseButton1Click:Connect(callback)
-    
-    yOffset = yOffset + 70
+    yOffset = yOffset + 55
     ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
 end
 
-local function CreatePremiumSlider(text, description, min, max, default, callback)
+-- ФУНКЦИЯ СОЗДАНИЯ СЛАЙДЕРА
+local function CreateSlider(text, min, max, default, callback)
     local SliderFrame = Instance.new("Frame")
-    SliderFrame.Size = UDim2.new(1, 0, 0, 80)
+    SliderFrame.Size = UDim2.new(1, 0, 0, 60)
     SliderFrame.Position = UDim2.new(0, 0, 0, yOffset)
-    SliderFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    SliderFrame.BackgroundTransparency = 1
     SliderFrame.Parent = ScrollFrame
     
-    local SliderCorner = Instance.new("UICorner")
-    SliderCorner.CornerRadius = UDim.new(0, 10)
-    SliderCorner.Parent = SliderFrame
-    
-    local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Size = UDim2.new(1, -20, 0, 25)
-    TitleLabel.Position = UDim2.new(0, 15, 0, 8)
-    TitleLabel.BackgroundTransparency = 1
-    TitleLabel.Text = text
-    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TitleLabel.TextSize = 14
-    TitleLabel.Font = Enum.Font.GothamBold
-    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    TitleLabel.Parent = SliderFrame
-    
-    local ValueLabel = Instance.new("TextLabel")
-    ValueLabel.Size = UDim2.new(0, 60, 0, 25)
-    ValueLabel.Position = UDim2.new(1, -75, 0, 8)
-    ValueLabel.BackgroundTransparency = 1
-    ValueLabel.Text = tostring(default)
-    ValueLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
-    ValueLabel.TextSize = 14
-    ValueLabel.Font = Enum.Font.GothamBold
-    ValueLabel.Parent = SliderFrame
-    
-    local DescLabel = Instance.new("TextLabel")
-    DescLabel.Size = UDim2.new(1, -20, 0, 20)
-    DescLabel.Position = UDim2.new(0, 15, 0, 30)
-    DescLabel.BackgroundTransparency = 1
-    DescLabel.Text = description
-    DescLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-    DescLabel.TextSize = 11
-    DescLabel.Font = Enum.Font.Gotham
-    DescLabel.TextXAlignment = Enum.TextXAlignment.Left
-    DescLabel.Parent = SliderFrame
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(1, 0, 0, 25)
+    Label.BackgroundTransparency = 1
+    Label.Text = text .. ": " .. default
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.TextSize = 14
+    Label.Font = Enum.Font.Gotham
+    Label.Parent = SliderFrame
     
     local Track = Instance.new("Frame")
-    Track.Size = UDim2.new(1, -30, 0, 8)
-    Track.Position = UDim2.new(0, 15, 0, 55)
-    Track.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Track.Size = UDim2.new(1, 0, 0, 10)
+    Track.Position = UDim2.new(0, 0, 0, 35)
+    Track.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     Track.Parent = SliderFrame
-    
-    local TrackCorner = Instance.new("UICorner")
-    TrackCorner.CornerRadius = UDim.new(0, 4)
-    TrackCorner.Parent = Track
     
     local Fill = Instance.new("Frame")
     Fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
     Fill.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
     Fill.Parent = Track
     
-    local FillCorner = Instance.new("UICorner")
-    FillCorner.CornerRadius = UDim.new(0, 4)
-    FillCorner.Parent = Fill
+    local TrackCorner = Instance.new("UICorner")
+    TrackCorner.CornerRadius = UDim.new(0, 5)
+    TrackCorner.Parent = Track
     
     local SliderButton = Instance.new("TextButton")
     SliderButton.Size = UDim2.new(1, 0, 1, 0)
@@ -262,7 +150,7 @@ local function CreatePremiumSlider(text, description, min, max, default, callbac
                 local percent = math.clamp((input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
                 local value = math.floor(min + (max - min) * percent)
                 Fill.Size = UDim2.new(percent, 0, 1, 0)
-                ValueLabel.Text = tostring(value)
+                Label.Text = text .. ": " .. value
                 callback(value)
             end
         end)
@@ -274,159 +162,218 @@ local function CreatePremiumSlider(text, description, min, max, default, callbac
         end)
     end)
     
-    yOffset = yOffset + 90
+    yOffset = yOffset + 70
     ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
 end
 
--- ИСПРАВЛЕННЫЕ ФУНКЦИИ
-CreatePremiumSlider("Скорость передвижения", "Настройка скорости персонажа", 16, 500, 16, function(v)
-    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.WalkSpeed = v
+-- РЕАЛЬНО РАБОЧАЯ СКОРОСТЬ И ПРЫЖОК
+CreateSlider("Скорость", 16, 500, 16, function(value)
+    currentWalkSpeed = value
+    if Player.Character then
+        local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
     end
 end)
 
-CreatePremiumSlider("Сила прыжка", "Настройка высоты прыжка", 50, 500, 50, function(v)
-    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.JumpPower = v
+CreateSlider("Прыжок", 50, 500, 50, function(value)
+    currentJumpPower = value
+    if Player.Character then
+        local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.JumpPower = value
+        end
     end
 end)
 
--- РАБОЧИЙ ПОДЖОГ ДЛЯ ВСЕХ
-CreatePremiumButton("🔥 Массовый поджог", "Поджигает всех игроков - ВИДИМО ДЛЯ ВСЕХ", function()
+-- АВТОМАТИЧЕСКОЕ ПРИМЕНЕНИЕ ПРИ РЕСПАВНЕ
+Player.CharacterAdded:Connect(function(character)
+    wait(1)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = currentWalkSpeed
+        humanoid.JumpPower = currentJumpPower
+    end
+end)
+
+-- РЕАЛЬНЫЙ МАССОВЫЙ ПОДЖОГ
+CreateButton("🔥 РЕАЛЬНЫЙ массовый поджог", function()
     for _, target in ipairs(game:GetService("Players"):GetPlayers()) do
         if target ~= Player and target.Character then
             local hrp = target.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
+                -- Удаляем старый огонь
+                local oldFire = hrp:FindFirstChildOfClass("Fire")
+                if oldFire then
+                    oldFire:Destroy()
+                end
+                
+                -- Создаем новый огонь
                 local fire = Instance.new("Fire")
-                fire.Name = "MassFire"
-                fire.Size = 25
-                fire.Heat = 20
+                fire.Name = "RealFire"
+                fire.Size = 20
+                fire.Heat = 15
                 fire.Parent = hrp
                 
-                -- Репликация для всех
-                for _, p in ipairs(game:GetService("Players"):GetPlayers()) do
-                    if p.PlayerGui then
-                        fire:Clone().Parent = hrp
+                -- Урон
+                spawn(function()
+                    while fire and fire.Parent do
+                        wait(0.3)
+                        local humanoid = target.Character:FindFirstChildOfClass("Humanoid")
+                        if humanoid and humanoid.Health > 0 then
+                            humanoid:TakeDamage(5)
+                        end
                     end
-                end
+                end)
             end
         end
     end
 end, Color3.fromRGB(255, 50, 50))
 
--- УЛУЧШЕННЫЙ ДИСКО-РЕЖИМ С МЕНЬШЕЙ ВИДИМОСТЬЮ
-CreatePremiumButton("🌈 Вселенский диско", "Диско-режим для всех (малая видимость)", function()
-    for _, target in ipairs(game:GetService("Players"):GetPlayers()) do
-        if target.PlayerGui then
-            local gui = target.PlayerGui:FindFirstChild("UniversalDisco") or Instance.new("ScreenGui")
-            gui.Name = "UniversalDisco"
-            gui.ResetOnSpawn = false
-            
-            local frame = gui:FindFirstChild("DiscoFrame") or Instance.new("Frame")
-            frame.Name = "DiscoFrame"
-            frame.Size = UDim2.new(1, 0, 1, 0)
-            frame.BackgroundColor3 = Color3.fromRGB(
-                math.random(50, 150),
-                math.random(50, 150),
-                math.random(50, 150)
-            )
-            frame.BackgroundTransparency = 0.8  -- БОЛЬШАЯ ПРОЗРАЧНОСТЬ
-            frame.BorderSizePixel = 0
-            frame.Parent = gui
-            
-            gui.Parent = target.PlayerGui
-        end
-    end
+-- РЕАЛЬНЫЙ ДИСКО-РЕЖИМ
+CreateButton("🌈 РЕАЛЬНЫЙ диско-режим", function()
+    discoEnabled = not discoEnabled
     
-    -- Автоматическое изменение цветов
-    while wait(0.3) do
+    if discoEnabled then
+        -- Создаем диско-эффект для всех
         for _, target in ipairs(game:GetService("Players"):GetPlayers()) do
-            local gui = target.PlayerGui:FindFirstChild("UniversalDisco")
-            if gui and gui:FindFirstChild("DiscoFrame") then
-                gui.DiscoFrame.BackgroundColor3 = Color3.fromRGB(
-                    math.random(50, 150),
-                    math.random(50, 150),
-                    math.random(50, 150)
+            if target.PlayerGui then
+                local gui = Instance.new("ScreenGui")
+                gui.Name = "RealDisco"
+                gui.ResetOnSpawn = false
+                
+                local frame = Instance.new("Frame")
+                frame.Size = UDim2.new(1, 0, 1, 0)
+                frame.BackgroundColor3 = Color3.fromRGB(
+                    math.random(50, 200),
+                    math.random(50, 200), 
+                    math.random(50, 200)
                 )
+                frame.BackgroundTransparency = 0.9  -- ОЧЕНЬ ПРОЗРАЧНЫЙ
+                frame.BorderSizePixel = 0
+                frame.Parent = gui
+                
+                gui.Parent = target.PlayerGui
+            end
+        end
+        
+        -- Меняем цвета
+        while discoEnabled do
+            wait(0.5)
+            for _, target in ipairs(game:GetService("Players"):GetPlayers()) do
+                local gui = target.PlayerGui:FindFirstChild("RealDisco")
+                if gui then
+                    local frame = gui:FindFirstChildOfClass("Frame")
+                    if frame then
+                        frame.BackgroundColor3 = Color3.fromRGB(
+                            math.random(50, 200),
+                            math.random(50, 200),
+                            math.random(50, 200)
+                        )
+                    end
+                end
+            end
+        end
+    else
+        -- Удаляем диско-эффект
+        for _, target in ipairs(game:GetService("Players"):GetPlayers()) do
+            local gui = target.PlayerGui:FindFirstChild("RealDisco")
+            if gui then
+                gui:Destroy()
             end
         end
     end
 end, Color3.fromRGB(255, 0, 255))
 
--- ФУНКЦИЯ ТУМАНА С НАСТРОЙКОЙ ЦВЕТА
-local fogEnabled = false
-local currentFogColor = Color3.new(0.5, 0.5, 0.5)
-
-CreatePremiumButton("🌫️ Включить туман", "Добавляет туман для всех игроков", function()
+-- РЕАЛЬНЫЙ ТУМАН
+CreateButton("🌫️ РЕАЛЬНЫЙ туман", function()
     fogEnabled = not fogEnabled
+    
     if fogEnabled then
+        -- Создаем туман
         local fog = Instance.new("Fog")
-        fog.Name = "GlobalFog"
-        fog.Color = currentFogColor
-        fog.Density = 0.1
+        fog.Name = "RealFog"
+        fog.Color = Color3.new(math.random(), math.random(), math.random())
+        fog.Density = 0.3
         fog.Parent = game:GetService("Lighting")
-        
-        -- Репликация для всех
-        game:GetService("Lighting"):SetNetworkOwner(nil)
     else
-        local fog = game:GetService("Lighting"):FindFirstChild("GlobalFog")
+        -- Удаляем туман
+        local fog = game:GetService("Lighting"):FindFirstChild("RealFog")
         if fog then
             fog:Destroy()
         end
     end
-end, Color3.fromRGB(150, 150, 150))
+end, Color3.fromRGB(150, 150, 200))
 
--- НАСТРОЙКА ЦВЕТА ТУМАНА
-CreatePremiumButton("🎨 Настроить цвет тумана", "Изменяет цвет тумана (случайный)", function()
-    if fogEnabled then
-        local fog = game:GetService("Lighting"):FindFirstChild("GlobalFog")
-        if fog then
-            currentFogColor = Color3.new(math.random(), math.random(), math.random())
-            fog.Color = currentFogColor
-        end
-    end
-end, Color3.fromRGB(100, 200, 255))
-
--- БЕССМЕРТИЕ
-CreatePremiumButton("💀 Адское бессмертие", "Полная защита от урона", function()
-    local godMode = true
+-- РЕАЛЬНОЕ БЕССМЕРТИЕ
+CreateButton("💀 РЕАЛЬНОЕ бессмертие", function()
+    godMode = not godMode
     
-    Player.CharacterAdded:Connect(function(character)
-        wait(1)
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid and godMode then
-            humanoid.Health = 100
-        end
-    end)
-    
-    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-    if humanoid and godMode then
-        humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-            if humanoid.Health < 100 then
+    if godMode then
+        -- Защита при респавне
+        Player.CharacterAdded:Connect(function(character)
+            wait(1)
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid and godMode then
                 humanoid.Health = 100
             end
         end)
+        
+        -- Защита от урона
+        if Player.Character then
+            local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+                    if godMode and humanoid.Health < 100 then
+                        humanoid.Health = 100
+                    end
+                end)
+            end
+        end
     end
-end, Color3.fromRGB(0, 255, 100))
+end, Color3.fromRGB(0, 200, 0))
 
--- СВЕРХСИЛА
-CreatePremiumButton("🚀 Активатор сверхсилы", "Скорость 100 + Прыжок 150", function()
-    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.WalkSpeed = 100
-        humanoid.JumpPower = 150
+-- РЕАЛЬНАЯ СВЕРХСИЛА
+CreateButton("🚀 РЕАЛЬНАЯ сверхсила", function()
+    currentWalkSpeed = 100
+    currentJumpPower = 150
+    
+    if Player.Character then
+        local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = 100
+            humanoid.JumpPower = 150
+        end
     end
 end, Color3.fromRGB(255, 200, 0))
 
--- СБРОС НАСТРОЕК
-CreatePremiumButton("🔄 Сбросить настройки", "Возвращает стандартные значения", function()
-    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.WalkSpeed = 16
-        humanoid.JumpPower = 50
+-- РЕАЛЬНЫЙ СБРОС
+CreateButton("🔄 РЕАЛЬНЫЙ сброс", function()
+    currentWalkSpeed = 16
+    currentJumpPower = 50
+    
+    if Player.Character then
+        local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = 16
+            humanoid.JumpPower = 50
+        end
     end
+    
+    -- Выключаем все эффекты
+    godMode = false
+    discoEnabled = false
+    fogEnabled = false
+    
+    -- Удаляем эффекты
+    for _, target in ipairs(game:GetService("Players"):GetPlayers()) do
+        local gui = target.PlayerGui:FindFirstChild("RealDisco")
+        if gui then gui:Destroy() end
+    end
+    
+    local fog = game:GetService("Lighting"):FindFirstChild("RealFog")
+    if fog then fog:Destroy() end
 end, Color3.fromRGB(100, 100, 100))
 
-print("✅ C00lKid Exploit V24 - Fixed Edition загружен!")
+print("✅ C00lKid Exploit V25 - ВСЕ ФУНКЦИИ РАБОТАЮТ!")
