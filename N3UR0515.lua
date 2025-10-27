@@ -1,173 +1,98 @@
--- [C00lKid Exploit V6 - Full Menu Version]
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- [C00lKid Exploit V8 - Orion UI]
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "C00lKid Exploit V8", HidePremium = false, SaveConfig = false, IntroEnabled = true, IntroText = "ULTIMATE EXPLOIT"})
 
-local Window = Rayfield:CreateWindow({
-    Name = "N3UR0515 Exploit HAHAH",
-    LoadingTitle = "LOADING READY...",
-    LoadingSubtitle = "Enhanced Bypass Active",
-    ConfigurationSaving = { Enabled = false }
-})
-
--- A. УЛУЧШЕННЫЙ БАЙПАС
+-- БАЙПАС
 hookfunction(game:GetService("Players").LocalPlayer.Kick, function()
     return wait(9e9)
 end)
 
-if hookmetatable then
-    local mt = getrawmetatable(game)
-    local old = mt.__namecall
-    setreadonly(mt, false)
-    mt.__namecall = newcclosure(function(self, ...)
-        local method = getnamecallmethod()
-        if tostring(self) == "LocalPlayer" and method == "Kick" then
-            return wait(9e9)
-        end
-        return old(self, ...)
-    end)
-    setreadonly(mt, true)
-end
+-- ВКЛАДКИ
+local MainTab = Window:MakeTab({Name = "Основные", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local VisualTab = Window:MakeTab({Name = "Визуал", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local TrollingTab = Window:MakeTab({Name = "Троллинг", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 
--- B. ОСНОВНЫЕ ТАБЫ
-local MainTab = Window:CreateTab("Основные функции")
-local VisualTab = Window:CreateTab("Визуал")
-local TrollingTab = Window:CreateTab("Троллинг")
+-- 1. СКОРОСТЬ И ПРЫЖОК
+MainTab:AddSlider({Name = "Скорость", Min = 16, Max = 500, Default = 16, Color = Color3.fromRGB(255,0,0), Increment = 1, ValueName = "studs", Callback = function(Value) game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value end})
 
--- 1. ФУНКЦИЯ БЕССМЕРТИЯ
-MainTab:CreateToggle({
-    Name = "📛 Бессмертие",
-    CurrentValue = false,
-    Flag = "GodMode",
-    Callback = function(Value)
-        if Value then
-            -- A. Защита от урона
-            game:GetService("Players").LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-                game:GetService("Players").LocalPlayer.Character.Humanoid.Health = 100
-            end)
-            
-            -- B. Отключение коллизий
-            for _, part in ipairs(game:GetService("Players").LocalPlayer.Character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
-            end
-            
-            -- C. Защита при респавне
-            game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
-                wait(1)
-                game:GetService("Players").LocalPlayer.Character.Humanoid.Health = 100
-            end)
-        end
-    end,
-})
+MainTab:AddSlider({Name = "Сила прыжка", Min = 50, Max = 500, Default = 50, Color = Color3.fromRGB(0,255,0), Increment = 1, ValueName = "power", Callback = function(Value) game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value end})
 
--- 2. ЗАМЕНА НЕБА НА СКИН
-VisualTab:CreateButton({
-    Name = "🌌 Заменить небо на мой скин",
-    Callback = function()
-        -- A. Поиск скина
-        local skin = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Shirt") 
-        if not skin then
-            skin = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Pants")
-        end
-        
-        if skin then
-            -- B. Создание нового неба
-            local sky = Instance.new("Sky")
-            sky.SkyboxBk = skin.Decale
-            sky.SkyboxDn = skin.Decale  
-            sky.SkyboxFt = skin.Decale
-            sky.SkyboxLf = skin.Decale
-            sky.SkyboxRt = skin.Decale
-            sky.SkyboxUp = skin.Decale
-            sky.Parent = game:GetService("Lighting")
-            
-            -- C. Репликация для всех игроков
-            game:GetService("Lighting"):SetNetworkOwner(nil)
-        end
-    end,
-})
-
--- 3. ПОДЖОГ ВСЕХ ИГРОКОВ
-TrollingTab:CreateButton({
-    Name = "🔥 Поджечь всех игроков",
-    Callback = function()
-        for i, player in ipairs(game:GetService("Players"):GetPlayers()) do
-            if player ~= game:GetService("Players").LocalPlayer then
-                -- A. Создание огня
+-- 2. ФИКСИРОВАННЫЙ ПОДЖОГ
+TrollingTab:AddButton({Name = "Поджечь всех", Callback = function()
+    for i, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer and player.Character then
+            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
                 local fire = Instance.new("Fire")
-                fire.Size = 15
-                fire.Parent = player.Character:FindFirstChild("HumanoidRootPart")
+                fire.Size = 20
+                fire.Heat = 15
+                fire.Parent = hrp
                 
-                -- B. Нанесение периодического урона
-                spawn(function()
-                    while fire.Parent do
-                        wait(0.3)
-                        player.Character.Humanoid:TakeDamage(15)
-                    end
-                end)
-                
-                -- C. Репликация эффекта
+                -- Репликация
                 fire:SetNetworkOwner(nil)
             end
         end
-    end,
-})
+    end
+    OrionLib:MakeNotification({Name = "Успех!", Content = "Все игроки горят!", Image = "rbxassetid://4483345998", Time = 5})
+end})
 
--- 4. ДИСКО-РЕЖИМ
-TrollingTab:CreateToggle({
-    Name = "🎭 Диско-режим для всех",
-    CurrentValue = false,
-    Flag = "DiscoMode",
-    Callback = function(Value)
-        if Value then
-            -- A. Запуск цветового цикла
-            while Rayfield.Flags["DiscoMode"] do
-                wait(0.2)
-                -- B. Применение ко всем игрокам
-                for i, player in ipairs(game:GetService("Players"):GetPlayers()) do
-                    -- Очистка старых GUI
-                    if player.PlayerGui:FindFirstChild("DiscoScreen") then
-                        player.PlayerGui.DiscoScreen:Destroy()
-                    end
-                    
-                    -- Создание нового GUI
-                    local gui = Instance.new("ScreenGui")
-                    gui.Name = "DiscoScreen"
-                    local frame = Instance.new("Frame")
-                    frame.Size = UDim2.new(1, 0, 1, 0)
-                    frame.BackgroundColor3 = Color3.new(math.random(), math.random(), math.random())
-                    frame.Parent = gui
-                    gui.Parent = player.PlayerGui
-                    
-                    -- C. Репликация эффекта
-                    gui:SetNetworkOwner(nil)
-                end
-            end
-        else
-            -- D. Очистка при выключении
-            for i, player in ipairs(game:GetService("Players"):GetPlayers()) do
-                if player.PlayerGui:FindFirstChild("DiscoScreen") then
-                    player.PlayerGui.DiscoScreen:Destroy()
-                end
+-- 3. ФИКСИРОВАННОЕ НЕБО
+VisualTab:AddButton({Name = "Заменить небо на скин", Callback = function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if character then
+        local shirt = character:FindFirstChildOfClass("Shirt")
+        local pants = character:FindFirstChildOfClass("Pants")
+        
+        if shirt or pants then
+            local decalId = shirt and shirt.ShirtTemplate or pants and pants.PantsTemplate
+            if decalId then
+                local sky = Instance.new("Sky")
+                sky.SkyboxBk = decalId
+                sky.SkyboxDn = decalId
+                sky.SkyboxFt = decalId
+                sky.SkyboxLf = decalId
+                sky.SkyboxRt = decalId
+                sky.SkyboxUp = decalId
+                sky.Parent = game.Lighting
+                
+                game.Lighting:SetNetworkOwner(nil)
+                OrionLib:MakeNotification({Name = "Успех!", Content = "Небо заменено!", Image = "rbxassetid://4483345998", Time = 5})
             end
         end
-    end,
-})
-
--- 5. ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ
-MainTab:CreateButton({
-    Name = "⚡ Сверхскорость",
-    Callback = function()
-        game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = 100
     end
-})
+end})
 
-MainTab:CreateButton({
-    Name = "🦘 Супер-прыжок", 
-    Callback = function()
-        game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = 150
+-- 4. ФИКСИРОВАННЫЙ ДИСКО-РЕЖИМ
+local discoEnabled = false
+TrollingTab:AddToggle({Name = "Диско-режим", Default = false, Callback = function(Value)
+    discoEnabled = Value
+    while discoEnabled do
+        wait(0.3)
+        for i, player in ipairs(game.Players:GetPlayers()) do
+            if player.PlayerGui then
+                local gui = player.PlayerGui:FindFirstChild("DiscoGui") or Instance.new("ScreenGui")
+                gui.Name = "DiscoGui"
+                gui.ResetOnSpawn = false
+                
+                local frame = gui:FindFirstChild("DiscoFrame") or Instance.new("Frame")
+                frame.Name = "DiscoFrame"
+                frame.Size = UDim2.new(1,0,1,0)
+                frame.BackgroundColor3 = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
+                frame.Parent = gui
+                gui.Parent = player.PlayerGui
+                
+                gui:SetNetworkOwner(nil)
+            end
+        end
     end
-})
+    
+    if not Value then
+        for i, player in ipairs(game.Players:GetPlayers()) do
+            local gui = player.PlayerGui:FindFirstChild("DiscoGui")
+            if gui then gui:Destroy() end
+        end
+    end
+end})
 
--- АКТИВАЦИЯ ИНТЕРФЕЙСА
-Rayfield:LoadConfiguration()
+OrionLib:Init()
