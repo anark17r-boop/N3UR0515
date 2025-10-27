@@ -9,4 +9,4 @@ local LocalPlayer = Players.LocalPlayer
 local Inbutton = Instance.new("InvButton")
 Inbutton.Name = "InvButton"
 InvButton.Parent = game:GetService("CoreGui")
-
+InvButton.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
