@@ -1,6 +1,7 @@
--- C00lKid Exploit V23 - Premium Custom UI
+-- C00lKid Exploit V24 - Fixed Functions + Fog
 local Player = game:GetService("Players").LocalPlayer
 local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
 -- СОЗДАЕМ ПРЕМИУМ GUI
 local ScreenGui = Instance.new("ScreenGui")
@@ -8,7 +9,7 @@ ScreenGui.Name = "C00lKidPremiumGUI"
 ScreenGui.Parent = Player:WaitForChild("PlayerGui")
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 450, 0, 550)
+MainFrame.Size = UDim2.new(0, 450, 0, 600)
 MainFrame.Position = UDim2.new(0.3, 0, 0.2, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MainFrame.BorderSizePixel = 0
@@ -30,7 +31,7 @@ local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 15)
 UICorner.Parent = MainFrame
 
--- ЗАГОЛОВОК С ГРАДИЕНТОМ
+-- ЗАГОЛОВОК
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 50)
 TitleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
@@ -44,25 +45,13 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -40, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "C00lKid Exploit V23"
+Title.Text = "C00lKid Exploit V24"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 18
 Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TitleBar
 
-local SubTitle = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -40, 1, 0)
-Title.Position = UDim2.new(0, 15, 0, 0)
-Title.BackgroundTransparency = 1
-Title.Text = "Premium Edition"
-Title.TextColor3 = Color3.fromRGB(200, 200, 200)
-Title.TextSize = 12
-Title.Font = Enum.Font.Gotham
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = TitleBar
-
--- КНОПКА ЗАКРЫТИЯ
 local CloseButton = Instance.new("TextButton")
 CloseButton.Size = UDim2.new(0, 30, 0, 30)
 CloseButton.Position = UDim2.new(1, -35, 0, 10)
@@ -128,8 +117,9 @@ ScrollFrame.ScrollBarThickness = 4
 ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
 ScrollFrame.Parent = ContentFrame
 
--- ФУНКЦИЯ СОЗДАНИЯ КНОПКИ ПРЕМИУМ
+-- ФУНКЦИИ ДЛЯ GUI
 local yOffset = 10
+
 local function CreatePremiumButton(text, description, callback, color)
     local ButtonFrame = Instance.new("Frame")
     ButtonFrame.Size = UDim2.new(1, 0, 0, 60)
@@ -183,27 +173,20 @@ local function CreatePremiumButton(text, description, callback, color)
     DescLabel.TextXAlignment = Enum.TextXAlignment.Left
     DescLabel.Parent = ButtonFrame
     
-    -- АНИМАЦИЯ НАВЕДЕНИЯ
     Button.MouseEnter:Connect(function()
-        game:GetService("TweenService"):Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
+        TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
     end)
     
     Button.MouseLeave:Connect(function()
-        game:GetService("TweenService"):Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
+        TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
     end)
     
-    Button.MouseButton1Click:Connect(function()
-        game:GetService("TweenService"):Create(ButtonFrame, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
-        wait(0.1)
-        game:GetService("TweenService"):Create(ButtonFrame, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-        callback()
-    end)
+    Button.MouseButton1Click:Connect(callback)
     
     yOffset = yOffset + 70
     ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
 end
 
--- ФУНКЦИЯ СОЗДАНИЯ ПРЕМИУМ СЛАЙДЕРА
 local function CreatePremiumSlider(text, description, min, max, default, callback)
     local SliderFrame = Instance.new("Frame")
     SliderFrame.Size = UDim2.new(1, 0, 0, 80)
@@ -295,135 +278,155 @@ local function CreatePremiumSlider(text, description, min, max, default, callbac
     ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
 end
 
--- ОСНОВНЫЕ ФУНКЦИИ
-CreatePremiumSlider("Скорость передвижения", "Настройка скорости вашего персонажа", 16, 500, 16, function(v)
-    if Player.Character then
-        local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = v
-        end
+-- ИСПРАВЛЕННЫЕ ФУНКЦИИ
+CreatePremiumSlider("Скорость передвижения", "Настройка скорости персонажа", 16, 500, 16, function(v)
+    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = v
     end
 end)
 
 CreatePremiumSlider("Сила прыжка", "Настройка высоты прыжка", 50, 500, 50, function(v)
-    if Player.Character then
-        local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.JumpPower = v
-        end
+    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.JumpPower = v
     end
 end)
 
--- ТРОЛЛИНГ ФУНКЦИИ (ВИДИМЫЕ ДЛЯ ВСЕХ)
-CreatePremiumButton("🔥 Массовый поджог", "Поджигает всех игроков на сервере - ВИДИМО ДЛЯ ВСЕХ", function()
+-- РАБОЧИЙ ПОДЖОГ ДЛЯ ВСЕХ
+CreatePremiumButton("🔥 Массовый поджог", "Поджигает всех игроков - ВИДИМО ДЛЯ ВСЕХ", function()
     for _, target in ipairs(game:GetService("Players"):GetPlayers()) do
         if target ~= Player and target.Character then
             local hrp = target.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
                 local fire = Instance.new("Fire")
                 fire.Name = "MassFire"
-                fire.Size = 30
-                fire.Heat = 25
+                fire.Size = 25
+                fire.Heat = 20
                 fire.Parent = hrp
                 
                 -- Репликация для всех
                 for _, p in ipairs(game:GetService("Players"):GetPlayers()) do
-                    fire:Replicate("Fire")
+                    if p.PlayerGui then
+                        fire:Clone().Parent = hrp
+                    end
                 end
             end
         end
     end
 end, Color3.fromRGB(255, 50, 50))
 
-CreatePremiumButton("🌀 Космическое небо", "Заменяет небо на ваш скин - ВИДИМО ДЛЯ ВСЕХ", function()
-    if Player.Character then
-        local shirt = Player.Character:FindFirstChildOfClass("Shirt")
-        local pants = Player.Character:FindFirstChildOfClass("Pants")
-        local textureId = nil
-        
-        if shirt then
-            textureId = shirt.ShirtTemplate
-        elseif pants then
-            textureId = pants.PantsTemplate
-        end
-        
-        if textureId then
-            for _, obj in ipairs(game:GetService("Lighting"):GetChildren()) do
-                if obj:IsA("Sky") then
-                    obj:Destroy()
-                end
-            end
-            
-            local newSky = Instance.new("Sky")
-            newSky.SkyboxBk = textureId
-            newSky.SkyboxDn = textureId
-            newSky.SkyboxFt = textureId
-            newSky.SkyboxLf = textureId
-            newSky.SkyboxRt = textureId
-            newSky.SkyboxUp = textureId
-            newSky.Parent = game:GetService("Lighting")
-            
-            -- Репликация для всех
-            game:GetService("Lighting"):SetNetworkOwner(nil)
-        end
-    end
-end, Color3.fromRGB(0, 150, 255))
-
-CreatePremiumButton("🌈 Вселенский диско", "Включает диско-режим для всех игроков - ВИДИМО ДЛЯ ВСЕХ", function()
+-- УЛУЧШЕННЫЙ ДИСКО-РЕЖИМ С МЕНЬШЕЙ ВИДИМОСТЬЮ
+CreatePremiumButton("🌈 Вселенский диско", "Диско-режим для всех (малая видимость)", function()
     for _, target in ipairs(game:GetService("Players"):GetPlayers()) do
         if target.PlayerGui then
-            local gui = Instance.new("ScreenGui")
+            local gui = target.PlayerGui:FindFirstChild("UniversalDisco") or Instance.new("ScreenGui")
             gui.Name = "UniversalDisco"
             gui.ResetOnSpawn = false
             
-            local frame = Instance.new("Frame")
+            local frame = gui:FindFirstChild("DiscoFrame") or Instance.new("Frame")
+            frame.Name = "DiscoFrame"
             frame.Size = UDim2.new(1, 0, 1, 0)
             frame.BackgroundColor3 = Color3.fromRGB(
-                math.random(0, 255),
-                math.random(0, 255),
-                math.random(0, 255)
+                math.random(50, 150),
+                math.random(50, 150),
+                math.random(50, 150)
             )
-            frame.BackgroundTransparency = 0.2
+            frame.BackgroundTransparency = 0.8  -- БОЛЬШАЯ ПРОЗРАЧНОСТЬ
             frame.BorderSizePixel = 0
             frame.Parent = gui
             
             gui.Parent = target.PlayerGui
-            
-            -- Репликация для всех
-            gui:SetNetworkOwner(nil)
+        end
+    end
+    
+    -- Автоматическое изменение цветов
+    while wait(0.3) do
+        for _, target in ipairs(game:GetService("Players"):GetPlayers()) do
+            local gui = target.PlayerGui:FindFirstChild("UniversalDisco")
+            if gui and gui:FindFirstChild("DiscoFrame") then
+                gui.DiscoFrame.BackgroundColor3 = Color3.fromRGB(
+                    math.random(50, 150),
+                    math.random(50, 150),
+                    math.random(50, 150)
+                )
+            end
         end
     end
 end, Color3.fromRGB(255, 0, 255))
 
-CreatePremiumButton("💀 Адское бессмертие", "Активирует полную защиту от урона", function()
+-- ФУНКЦИЯ ТУМАНА С НАСТРОЙКОЙ ЦВЕТА
+local fogEnabled = false
+local currentFogColor = Color3.new(0.5, 0.5, 0.5)
+
+CreatePremiumButton("🌫️ Включить туман", "Добавляет туман для всех игроков", function()
+    fogEnabled = not fogEnabled
+    if fogEnabled then
+        local fog = Instance.new("Fog")
+        fog.Name = "GlobalFog"
+        fog.Color = currentFogColor
+        fog.Density = 0.1
+        fog.Parent = game:GetService("Lighting")
+        
+        -- Репликация для всех
+        game:GetService("Lighting"):SetNetworkOwner(nil)
+    else
+        local fog = game:GetService("Lighting"):FindFirstChild("GlobalFog")
+        if fog then
+            fog:Destroy()
+        end
+    end
+end, Color3.fromRGB(150, 150, 150))
+
+-- НАСТРОЙКА ЦВЕТА ТУМАНА
+CreatePremiumButton("🎨 Настроить цвет тумана", "Изменяет цвет тумана (случайный)", function()
+    if fogEnabled then
+        local fog = game:GetService("Lighting"):FindFirstChild("GlobalFog")
+        if fog then
+            currentFogColor = Color3.new(math.random(), math.random(), math.random())
+            fog.Color = currentFogColor
+        end
+    end
+end, Color3.fromRGB(100, 200, 255))
+
+-- БЕССМЕРТИЕ
+CreatePremiumButton("💀 Адское бессмертие", "Полная защита от урона", function()
+    local godMode = true
+    
     Player.CharacterAdded:Connect(function(character)
         wait(1)
         local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
+        if humanoid and godMode then
             humanoid.Health = 100
         end
     end)
     
-    if Player.Character then
-        local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-                if humanoid.Health < 100 then
-                    humanoid.Health = 100
-                end
-            end)
-        end
+    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid and godMode then
+        humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+            if humanoid.Health < 100 then
+                humanoid.Health = 100
+            end
+        end)
     end
 end, Color3.fromRGB(0, 255, 100))
 
-CreatePremiumButton("🚀 Активатор сверхсилы", "Максимальная скорость и прыжок", function()
-    if Player.Character then
-        local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = 100
-            humanoid.JumpPower = 150
-        end
+-- СВЕРХСИЛА
+CreatePremiumButton("🚀 Активатор сверхсилы", "Скорость 100 + Прыжок 150", function()
+    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = 100
+        humanoid.JumpPower = 150
     end
 end, Color3.fromRGB(255, 200, 0))
 
-print("✅ C00lKid Exploit V23 - Premium Edition загружен!")
+-- СБРОС НАСТРОЕК
+CreatePremiumButton("🔄 Сбросить настройки", "Возвращает стандартные значения", function()
+    local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = 16
+        humanoid.JumpPower = 50
+    end
+end, Color3.fromRGB(100, 100, 100))
+
+print("✅ C00lKid Exploit V24 - Fixed Edition загружен!")
